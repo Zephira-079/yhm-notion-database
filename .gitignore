@@ -1,5 +1,6 @@
 *.pyc
 __pycache__
 .vscode
-data.json
-data.txt
+DataFormatter.py
+samples
+Main.py

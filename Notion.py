@@ -1,7 +1,5 @@
 import json
 import requests
-from Properties import Properties
-from DataFormatter import print_data_as_directory, format_data_as_directory
 
 class Notion:
     def __init__(self, auth_token):
@@ -23,7 +21,7 @@ class Notion:
             self.table_page_url = 'https://api.notion.com/v1/pages'
             self.table_page_read_url = f"https://api.notion.com/v1/databases/{database_id}/query"
             
-        def get_table_as_json(self):
+        def get_raw(self):
             res = requests.post(url=self.table_page_read_url, headers=self.headers)
             return res.json()
 
@@ -68,16 +66,7 @@ class Notion:
             
             return res.status_code
 
-        
-        def property(self, match_string = None):
-            res = requests.post(url=self.table_page_read_url, headers=self.headers)
-            table_as_json = res.json()
-            results = table_as_json["results"]
-            properties = [property["properties"] for property in results]
-
-            return properties
-
-        def find_ids_by_similar_text(self, similar_text):
+        def includes(self, similar_text):
             data = requests.post(url=self.table_page_read_url, headers=self.headers).json()["results"]
             ids = []
 
@@ -98,70 +87,4 @@ class Notion:
             for entry in data:
                 search_for_text(entry)
 
-            return ids
-        
-        def find_ids_by_similar_strict(self, data, similar_text):
-            ids = []
-            
-            def search_for_text(item):
-                if isinstance(item, dict):
-                    for key, value in item.items():
-                        if isinstance(value, dict) or isinstance(value, list):
-                            search_for_text(value)
-                        elif isinstance(value, str) and similar_text == value:
-                            id_value = item.get("id")
-                            if id_value:
-                                ids.append(id_value)
-                elif isinstance(item, list):
-                    for sub_item in item:
-                        if isinstance(sub_item, dict) or isinstance(sub_item, list):
-                            search_for_text(sub_item)
-                    
-            for entry in data:
-                search_for_text(entry)
-            
-            return ids
-
-        def find_ids_by_similar_insensitive(self, data, similar_text):
-            ids = []
-            
-            def search_for_text(item):
-                if isinstance(item, dict):
-                    for key, value in item.items():
-                        if isinstance(value, dict) or isinstance(value, list):
-                            search_for_text(value)
-                        elif isinstance(value, str) and similar_text.lower() == value.lower():
-                            id_value = item.get("id")
-                            if id_value:
-                                ids.append(id_value)
-                elif isinstance(item, list):
-                    for sub_item in item:
-                        if isinstance(sub_item, dict) or isinstance(sub_item, list):
-                            search_for_text(sub_item)
-                    
-            for entry in data:
-                search_for_text(entry)
-            
-            return ids
-
-        def find_ids_by_similar_insenspace(self, data, similar_text):
-            ids = []
-            
-            def search_for_text(item):
-                if isinstance(item, dict):
-                    for key, value in item.items():
-                        if isinstance(value, dict) or isinstance(value, list):
-                            search_for_text(value)
-                        elif isinstance(value, str) and similar_text.replace(" ", "").lower() == value.replace(" ", "").lower():
-                            id_value = item.get("id")
-                            if id_value:
-                                ids.append(id_value)
-                elif isinstance(item, list):
-                    for sub_item in item:
-                        if isinstance(sub_item, dict) or isinstance(sub_item, list):
-                            search_for_text(sub_item)
-                    
-            for entry in data:
-                search_for_text(entry)
-            
             return ids
