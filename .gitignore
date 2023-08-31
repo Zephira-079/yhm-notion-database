@@ -1,6 +1,7 @@
 *.pyc
 __pycache__
 .vscode
-DataFormatter.py
 samples
 Main.py
+index.php
+cacert.pem

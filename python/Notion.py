@@ -65,26 +65,3 @@ class Notion:
             res = requests.patch(url=f'{self.table_page_url}/{page_id}', headers=self.headers, data=data)
             
             return res.status_code
-
-        def includes(self, similar_text):
-            data = requests.post(url=self.table_page_read_url, headers=self.headers).json()["results"]
-            ids = []
-
-            def search_for_text(item):
-                if isinstance(item, dict):
-                    for value in item.values():
-                        if isinstance(value, dict) or isinstance(value, list):
-                            search_for_text(value)
-                        elif isinstance(value, str) and similar_text in value:
-                            id_value = item.get("id")
-                            if id_value:
-                                ids.append(id_value)
-                elif isinstance(item, list):
-                    for sub_item in item:
-                        if isinstance(sub_item, dict) or isinstance(sub_item, list):
-                            search_for_text(sub_item)
-
-            for entry in data:
-                search_for_text(entry)
-
-            return ids
